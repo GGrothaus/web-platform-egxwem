@@ -52,21 +52,22 @@ function main() {
 
   const scene = new THREE.Scene();
 
-  //const boxWidth = 1;
-  //const boxHeight = 1;
-  //const boxDepth = 1;
-  //const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
   const geometry = new THREE.TorusKnotGeometry( .5, .2, 100, 16 );
-  const cubes = [];  // just an array we can use to rotate the cubes
+  const geometry2 = new THREE.TorusKnotGeometry(.1, .05, 100, 16); 
+  const forms = [];  // just an array we can use to rotate the tori
   const loader = new THREE.TextureLoader();
 
   const material = new THREE.MeshBasicMaterial({
     map: loader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg'),
   //  map: loader.load('https://flic.kr/p/2ms1mta'),
   });
-  const cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
-  cubes.push(cube);  // add to our list of cubes to rotate
+  const torus = new THREE.Mesh(geometry, material);
+  const torus2 = new THREE.Mesh(geometry, material);
+  scene.add(torus);
+  scene.add(torus2);
+  forms.push(torus, torus2);  // add to our list of cubes to rotate
+  torus.position.set(0.1, -0.5, 0.2);
+  torus2.position.set(0.1, 0.5, 0.2);
 
   function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;
@@ -79,7 +80,6 @@ function main() {
     return needResize;
   }
 
-
   function render(time) {
     time *= 0.001;
 
@@ -89,13 +89,14 @@ function main() {
       camera.updateProjectionMatrix();
     }
 
-    cubes.forEach((cube, ndx) => {
+    forms.forEach((torus, ndx) => {
       const speed = .15 + ndx * .1;
       const rot = time * speed;
-      cube.rotation.x = rot;
-      cube.rotation.y = rot;
-    });
+      torus.rotation.x = rot;
+      torus.rotation.y = rot;
+      torus2.rotation.x = rot*4;
 
+    });
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }
