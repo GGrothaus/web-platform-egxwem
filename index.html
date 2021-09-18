@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+</style>
+</head>
+<body>
+<script type="module">
+// import the Three.js module:
+import * as THREE from "https://unpkg.com/three@0.126.0/build/three.module.js";
+// load in the module:
+//import Stats from "https://unpkg.com/three@0.126.0/examples/jsm/libs/stats.module";
+
+// add a stats view to the page to monitor performance:
+//const stats = new Stats();
+//document.body.appendChild(stats.dom);
+
+// create a renderer with better than default quality:
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+// make it fill the page
+renderer.setSize(window.innerWidth, window.innerHeight);
+// create and add the <canvas>
+document.body.appendChild(renderer.domElement); 
+
+// create a perspective camera
+const camera = new THREE.PerspectiveCamera( 
+    75,  // this camera has a 75 degree field of view in the vertical axis
+    window.innerWidth / window.innerHeight, // the aspect ratio matches the size of the window
+    //defining the near and far clipping planes (next two lines):
+    0.05, // anything less than 5cm from the eye will not be drawn
+    100  // anything more than 100m from the eye will not be drawn
+);
+// position the camera 2m in the Z axis and 1.5m in the Y axis
+// the Y axis points up from the ground
+// the Z axis point out of the screen toward you
+camera.position.y = 1.5; //1.5 as approx average human eye height
+camera.position.z = 2; //2 meters stepped back from the simulated world
+
+// create the root of a scene graph
+const scene = new THREE.Scene();
+
+function main() {
+  const canvas = document.querySelector('#c');
+
+  const fov = 75;
+  const aspect = 2;  // the canvas default
+  const near = 0.1;
+  const far = 5;
+  const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera.position.z = 2;
+
+  const scene = new THREE.Scene();
+
+  //const boxWidth = 1;
+  //const boxHeight = 1;
+  //const boxDepth = 1;
+  //const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+  const geometry = new THREE.TorusKnotGeometry( .5, .2, 100, 16 );
+  const cubes = [];  // just an array we can use to rotate the cubes
+  const loader = new THREE.TextureLoader();
+
+  const material = new THREE.MeshBasicMaterial({
+    map: loader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg'),
+  //  map: loader.load('https://flic.kr/p/2ms1mta'),
+  });
+  const cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+  cubes.push(cube);  // add to our list of cubes to rotate
+
+  function resizeRendererToDisplaySize(renderer) {
+    const canvas = renderer.domElement;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const needResize = canvas.width !== width || canvas.height !== height;
+    if (needResize) {
+      renderer.setSize(width, height, false);
+    }
+    return needResize;
+  }
+
+
+  function render(time) {
+    time *= 0.001;
+
+    if (resizeRendererToDisplaySize(renderer)) {
+      const canvas = renderer.domElement;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+    }
+
+    cubes.forEach((cube, ndx) => {
+      const speed = .15 + ndx * .1;
+      const rot = time * speed;
+      cube.rotation.x = rot;
+      cube.rotation.y = rot;
+    });
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+}
+
+main();
+
+
+</script>
+</body>
+
+</html>
