@@ -4,7 +4,7 @@
   <meta charset="utf-8">
 </style>
 </head>
-<body>
+<body> 
 <script type="module">
 
 // import the Three.js module:
@@ -16,16 +16,15 @@ import Stats from "https://unpkg.com/three@0.126.0/examples/jsm/libs/stats.modul
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
-// create a renderer with better than default quality:
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-// make it fill the page
-renderer.setSize(window.innerWidth, window.innerHeight);
-// create and add the <canvas>
-document.body.appendChild(renderer.domElement); 
-
 function main() {
   const canvas = document.querySelector('#c');
+  // create a renderer with better than default quality:
+  const renderer = new THREE.WebGLRenderer({  antialias: true }); //alpha: true for white background
+  renderer.setPixelRatio(window.devicePixelRatio);
+  // make it fill the page
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  // create and add the <canvas>
+  document.body.appendChild(renderer.domElement); 
   const fov = 75; // this camera has a 75 degree field of view in the vertical axis
   const aspect = window.innerWidth / window.innerHeight; // the aspect ratio matches the size of the window
   //defining the near and far clipping planes (next two lines):
@@ -37,22 +36,37 @@ function main() {
 
   const scene = new THREE.Scene();
 
-  const geometry = new THREE.TorusKnotGeometry( .5, .2, 100, 16 );
-  const geometry2 = new THREE.TorusKnotGeometry(.1, .05, 100, 16); 
-  const forms = [];  // just an array we can use to rotate the tori
-  const loader = new THREE.TextureLoader();
+  //add geometric forms
+  const geometry = new THREE.TorusKnotGeometry( 0.5, 0.2, 100, 16 );
+  const geometry2 = new THREE.TorusKnotGeometry(0.2, 0.08, 16 , 100); 
+  const geometry3 = new THREE.TorusKnotGeometry(0.4, 0.15, 100, 16);
+  //const geometry3 = new THREE.ParametricGeometry( THREE.ParametricGeometries.klein, 25, 25 );
+  //const geometry3 = new THREE.RingGeometry( 1, 5, 32 );
+  const forms = [];  // an array to use to rotate the tori & other geometries
 
+  const loader = new THREE.TextureLoader();
   const material = new THREE.MeshBasicMaterial({
     map: loader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg'),
   //  map: loader.load('https://flic.kr/p/2ms1mta'), //learn why this isn't working
   });
+  //const material2 = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+  //const material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
+
   const torus = new THREE.Mesh(geometry, material);
-  const torus2 = new THREE.Mesh(geometry, material);
+  const torus2 = new THREE.Mesh(geometry2, material);
+  const torus3 = new THREE.Mesh(geometry3, material);
+  //const klein = new THREE.Mesh(geometry3, material2);
+  //const mesh = new THREE.Mesh(geometry3, material);
+
   scene.add(torus);
   scene.add(torus2);
-  forms.push(torus, torus2);  // add to our list of cubes to rotate
-  torus.position.set(0.1, -0.5, 0.2);
-  torus2.position.set(-0.7, 1, 0.2);
+  scene.add(torus3);
+  //scene.add(klein);
+  //scene.add(mesh);
+  forms.push(torus, torus2, torus3);  // push to list of geometries to rotate
+  torus.position.set(0.1, -0.1, 0.2);
+  torus2.position.set(-0.7, 1.2, 0.2);
+  torus3.position.set(2.9, 1.5, -5);
 
   function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;
@@ -81,6 +95,9 @@ function main() {
       torus.rotation.x = rot;
       torus.rotation.y = rot;
       torus2.rotation.x = rot*4;
+      torus2.rotation.y = rot*2;
+      torus3.rotation.x = rot*8;
+      torus3.rotation.y = rot*12;
 
     });
     renderer.render(scene, camera);
