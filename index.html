@@ -6,14 +6,15 @@
 </head>
 <body>
 <script type="module">
+
 // import the Three.js module:
 import * as THREE from "https://unpkg.com/three@0.126.0/build/three.module.js";
 // load in the module:
-//import Stats from "https://unpkg.com/three@0.126.0/examples/jsm/libs/stats.module";
+import Stats from "https://unpkg.com/three@0.126.0/examples/jsm/libs/stats.module";
 
 // add a stats view to the page to monitor performance:
-//const stats = new Stats();
-//document.body.appendChild(stats.dom);
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
 // create a renderer with better than default quality:
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -23,32 +24,16 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // create and add the <canvas>
 document.body.appendChild(renderer.domElement); 
 
-// create a perspective camera
-const camera = new THREE.PerspectiveCamera( 
-    75,  // this camera has a 75 degree field of view in the vertical axis
-    window.innerWidth / window.innerHeight, // the aspect ratio matches the size of the window
-    //defining the near and far clipping planes (next two lines):
-    0.05, // anything less than 5cm from the eye will not be drawn
-    100  // anything more than 100m from the eye will not be drawn
-);
-// position the camera 2m in the Z axis and 1.5m in the Y axis
-// the Y axis points up from the ground
-// the Z axis point out of the screen toward you
-camera.position.y = 1.5; //1.5 as approx average human eye height
-camera.position.z = 2; //2 meters stepped back from the simulated world
-
-// create the root of a scene graph
-const scene = new THREE.Scene();
-
 function main() {
   const canvas = document.querySelector('#c');
-
-  const fov = 75;
-  const aspect = 2;  // the canvas default
-  const near = 0.1;
-  const far = 5;
+  const fov = 75; // this camera has a 75 degree field of view in the vertical axis
+  const aspect = window.innerWidth / window.innerHeight; // the aspect ratio matches the size of the window
+  //defining the near and far clipping planes (next two lines):
+  const near = 0.05; // anything less than 5 centimeters from the eye will not be drawn
+  const far = 100; // anything more than 100 meters from the eye will not be drawn
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 2;
+  camera.position.y = 0.5; //1.5 is approx average human eye height
 
   const scene = new THREE.Scene();
 
@@ -59,7 +44,7 @@ function main() {
 
   const material = new THREE.MeshBasicMaterial({
     map: loader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg'),
-  //  map: loader.load('https://flic.kr/p/2ms1mta'),
+  //  map: loader.load('https://flic.kr/p/2ms1mta'), //learn why this isn't working
   });
   const torus = new THREE.Mesh(geometry, material);
   const torus2 = new THREE.Mesh(geometry, material);
@@ -67,7 +52,7 @@ function main() {
   scene.add(torus2);
   forms.push(torus, torus2);  // add to our list of cubes to rotate
   torus.position.set(0.1, -0.5, 0.2);
-  torus2.position.set(0.1, 0.5, 0.2);
+  torus2.position.set(-0.7, 1, 0.2);
 
   function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;
@@ -82,6 +67,7 @@ function main() {
 
   function render(time) {
     time *= 0.001;
+    stats.begin()
 
     if (resizeRendererToDisplaySize(renderer)) {
       const canvas = renderer.domElement;
@@ -98,6 +84,7 @@ function main() {
 
     });
     renderer.render(scene, camera);
+    stats.end()
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
