@@ -16,7 +16,7 @@ import Stats from "https://unpkg.com/three@0.126.0/examples/jsm/libs/stats.modul
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
-function main() {
+function init() {
   const canvas = document.querySelector('#c');
   // create a renderer with better than default quality:
   const renderer = new THREE.WebGLRenderer({  antialias: true }); //alpha: true 
@@ -34,7 +34,7 @@ function main() {
   camera.position.z = 2;
   camera.position.y = 0.5; //1.5 is approx average human eye height
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xAAAAAA);
+  scene.background = new THREE.Color('blue'); //gray: 0xAAAAAA
 
   //add geometric forms
   const geometry = new THREE.TorusKnotGeometry( 0.5, 0.2, 100, 16 );
@@ -136,7 +136,7 @@ scene.add( line );
   requestAnimationFrame(render);
 }
 
-main();
+init();
 
 
 </script>
